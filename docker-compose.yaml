@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  zentao:
+    image: idoop/zentao:12.3.stable
+    container_name: zentao
+    depends_on:
+      - zentao-db
+    environment:
+      - ZENTAO_VER=12.3.stable
+      - BIND_ADDRESS=false
+    volumes:
+      - ~/mydata/zentao/zentao-files:/opt/zbox/app/zentao
+      - ~/mydata/zentao/config:/opt/zbox/app/zentao/config
+      - ~/mydata/zentao/upload:/opt/zbox/app/zentao/www/data/upload
+    networks:
+      - traefik-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.zentao.rule=Host(`pm.nexuslearning.org`)"
+      - "traefik.http.routers.zentao.entrypoints=websecure"
+      - "traefik.http.routers.zentao.tls=true"
+      - "traefik.http.services.zentao.loadbalancer.server.port=80"
+    restart: always
+
+  zentao-db:
+    image: mysql:5.7
+    container_name: zentao-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=zentao
+    volumes:
+      - ~/mydata/zentao/mysql-data:/var/lib/mysql
+    networks:
+      - zentao-internal
+    restart: always
+
+networks:
+  traefik-net:
+    external: true
+  zentao-internal:
+    driver: bridge
