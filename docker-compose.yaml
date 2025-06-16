@@ -27,6 +27,7 @@ services:
   zentao-db:
     image: mysql:5.7
     container_name: zentao-db
+    platform: linux/amd64
     environment:
       - MYSQL_ROOT_PASSWORD=123456
       - MYSQL_DATABASE=zentao
