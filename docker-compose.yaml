@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   zentao:
-    image: idoop/zentao:12.3.stable
+    image: idoop/zentao:12.3.2
     container_name: zentao
     depends_on:
       - zentao-db
