@@ -2,8 +2,9 @@ version: "3.8"
 
 services:
   zentao:
-    image: idoop/zentao:12.3.2
+    image: easysoft/zentao:12.3.3
     container_name: zentao
+    platform: linux/amd64
     depends_on:
       - zentao-db
     environment:
