@@ -5,40 +5,26 @@ services:
     image: easysoft/zentao:12.3.3
     container_name: zentao
     platform: linux/amd64
-    depends_on:
-      - zentao-db
     environment:
       - ZENTAO_VER=12.3.stable
       - BIND_ADDRESS=false
+      - MYSQL_ROOT_PASSWORD=123456
     volumes:
-      - ~/mydata/zentao/zentao-files:/opt/zbox/app/zentao
-      - ~/mydata/zentao/config:/opt/zbox/app/zentao/config
-      - ~/mydata/zentao/upload:/opt/zbox/app/zentao/www/data/upload
+      - ~/mydata/zentao/zentaopms:/www/zentaopms
+      - ~/mydata/zentao/mysql-data:/var/lib/mysql
+    ports:
+      - "8060:80"
     networks:
       - traefik-net
     labels:
       - "traefik.enable=true"
+      - "traefik.docker.network=traefik-net"
+      - "traefik.http.services.zentao.loadbalancer.server.port=80"
       - "traefik.http.routers.zentao.rule=Host(`pm.nexuslearning.org`)"
       - "traefik.http.routers.zentao.entrypoints=websecure"
-      - "traefik.http.routers.zentao.tls=true"
-      - "traefik.http.services.zentao.loadbalancer.server.port=80"
-    restart: always
-
-  zentao-db:
-    image: mysql:5.7
-    container_name: zentao-db
-    platform: linux/amd64
-    environment:
-      - MYSQL_ROOT_PASSWORD=123456
-      - MYSQL_DATABASE=zentao
-    volumes:
-      - ~/mydata/zentao/mysql-data:/var/lib/mysql
-    networks:
-      - zentao-internal
+      - "traefik.http.routers.zentao.tls.certresolver=default-resolver"
     restart: always
 
 networks:
   traefik-net:
     external: true
-  zentao-internal:
-    driver: bridge
